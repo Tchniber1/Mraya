@@ -10,3 +10,4 @@ staticfiles/
 venv/
 .idea/
 .vscode/
+.superpowers/

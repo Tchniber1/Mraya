@@ -1,37 +1,53 @@
-{% load static %}<!doctype html>
+{% load static ui %}<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token }}">
   <title>{% block title %}Mraya{% endblock %} · Mraya</title>
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="{% static 'css/glass.css' %}">
+  <link rel="stylesheet" href="{% static 'css/ui.css' %}">
   {% block styles %}{% endblock %}
 </head>
 <body data-theme="{{ theme }}">
   <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
 
   <div class="shell">
-    <header class="nav glass">
-      <a class="brand" href="{% if mraya_user %}{% url 'core:home' %}{% else %}{% url 'accounts:login' %}{% endif %}">Mr<em>a</em>ya</a>
+    <header class="topbar glass">
+      <a class="brand" href="{% if mraya_user %}{% url 'core:home' %}{% else %}{% url 'accounts:login' %}{% endif %}">{% include "partials/logo.html" %}</a>
       {% if mraya_user %}
-        <nav class="nav-links" aria-label="Main">
-          <a class="btn btn-sm" href="{% url 'dashboard:home' %}">Dashboard</a>
-          <a class="btn btn-sm" href="{% url 'core:home' %}">New analysis</a>
-          <form method="post" action="{% url 'accounts:logout' %}">
-            {% csrf_token %}
-            <button class="btn btn-sm" type="submit">Sign out</button>
-          </form>
+        <nav class="topbar-links" aria-label="Main">
+          <a class="btn btn-ghost btn-sm" href="{% url 'dashboard:home' %}">{% icon "layout" 16 %}<span class="hide-sm"> Dashboard</span></a>
+          <a class="btn btn-ghost btn-sm" href="{% url 'core:home' %}">{% icon "plus" 16 %}<span class="hide-sm"> New analysis</span></a>
+          <div class="menu-wrap" data-menu>
+            <button class="avatar-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Account menu" data-menu-trigger>
+              <span class="avatar">{% if avatar_url %}<img src="{{ avatar_url }}" alt="" referrerpolicy="no-referrer">{% else %}<span>{{ initials }}</span>{% endif %}</span>
+            </button>
+            <div class="menu menu-right glass" role="menu" hidden>
+              <div class="menu-label">{{ mraya_user.name|default:"Signed in" }}{% if mraya_user.email %}<small>{{ mraya_user.email }}</small>{% endif %}</div>
+              <div class="separator" role="separator"></div>
+              <a role="menuitem" href="{% url 'dashboard:home' %}">{% icon "layout" 16 %} Dashboard</a>
+              <a role="menuitem" href="{% url 'dashboard:history' %}">{% icon "history" 16 %} History</a>
+              <a role="menuitem" href="{% url 'settings_page:index' %}">{% icon "settings" 16 %} Settings</a>
+              <div class="separator" role="separator"></div>
+              <form method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button role="menuitem" type="submit">{% icon "log-out" 16 %} Sign out</button>
+              </form>
+            </div>
+          </div>
         </nav>
       {% endif %}
     </header>
 
-    <main>
+    <main id="main">
       {% block content %}{% endblock %}
     </main>
   </div>
@@ -43,6 +59,7 @@
   </div>
 
   <script src="{% static 'js/common.js' %}"></script>
+  <script src="{% static 'js/ui.js' %}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

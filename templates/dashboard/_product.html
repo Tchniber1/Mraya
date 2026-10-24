@@ -1,0 +1,35 @@
+{% load ui %}
+<article class="card product" data-product="{{ product.id }}" data-status="{{ product.status }}">
+  <div class="product-media">
+    {% if product.image_url %}
+      <img src="{{ product.image_url }}" alt="{{ product.brand }} {{ product.name }}" loading="lazy" referrerpolicy="no-referrer" data-fallback>
+    {% endif %}
+    <span class="product-icon"{% if product.image_url %} hidden{% endif %}>{% icon product.icon 32 %}</span>
+    <span class="badge status-badge" data-status-label>{% if product.status == "started" %}Bought{% elif product.status == "not_yet" %}Not yet{% elif product.status == "not_interested" %}Not for me{% else %}New{% endif %}</span>
+    {% if product.priority == "essential" %}<span class="badge badge-accent essential">Essential</span>{% endif %}
+  </div>
+  <div class="product-body">
+    <p class="product-meta">
+      <span>{{ product.brand|default:"Recommended" }}</span>
+      {% if product.store %}<span aria-hidden="true">·</span><span>{{ product.store }}</span>{% endif %}
+      {% if in_abroad and product.flag %}<span class="product-country" title="{{ product.country_name }}">{{ product.flag }} {{ product.country_name }}</span>{% endif %}
+    </p>
+    <h3 class="product-name">{{ product.name }}</h3>
+    {% if product.why %}<p class="product-why">{{ product.why }}</p>{% endif %}
+    <div class="product-buy">
+      {% if product.price is not None %}
+        <span class="product-price number">{% if product.approx %}≈ {% endif %}{{ product.price|floatformat:"-2" }} {{ product.currency }}</span>
+      {% endif %}
+      {% if product.link %}
+        <a class="btn btn-outline btn-sm" href="{{ product.link }}" target="_blank" rel="noopener noreferrer">
+          View product {% icon "external-link" 14 %}<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      {% endif %}
+    </div>
+    <div class="segmented status-group" role="group" aria-label="Status for {{ product.name }}">
+      <button type="button" data-status="started" aria-pressed="{% if product.status == 'started' %}true{% else %}false{% endif %}">Bought</button>
+      <button type="button" data-status="not_yet" aria-pressed="{% if product.status == 'not_yet' %}true{% else %}false{% endif %}">Not yet</button>
+      <button type="button" data-status="not_interested" aria-pressed="{% if product.status == 'not_interested' %}true{% else %}false{% endif %}">Not for me</button>
+    </div>
+  </div>
+</article>

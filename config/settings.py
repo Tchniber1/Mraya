@@ -29,6 +29,7 @@ MRAYA_APPS = [
     "apps.onboarding",
     "apps.progress",
     "apps.dashboard",
+    "apps.settings_page",
 ]
 
 # Update packages ("mraya.plugins" entry points or MRAYA_PLUGINS env var)
@@ -114,6 +115,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMMA_MODEL = os.getenv("GEMMA_MODEL", "gemma-4-31b-it")
 GEMMA_TIMEOUT_MS = int(os.getenv("GEMMA_TIMEOUT_MS", "180000"))
+
+# Real product images, links and prices (https://serper.dev). Optional.
+SERPER_API_KEY = os.getenv("SERPER_API_KEY", "").strip()
+SERPER_COUNTRY = os.getenv("SERPER_COUNTRY", "ma").strip().lower() or "ma"
 
 # --- Firebase ---
 FIREBASE_WEB_CONFIG = {

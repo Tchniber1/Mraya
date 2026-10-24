@@ -6,7 +6,7 @@
   if (!form) return;
 
   var DRAFT_KEY = "mraya:onboarding-draft";
-  var DRAFT_FIELDS = ["age", "budget", "currency", "city", "brand_preferences", "style_preferences"];
+  var DRAFT_FIELDS = ["age", "budget", "currency", "country", "city", "brand_preferences", "style_preferences"];
   var stepForm = document.getElementById("step-form");
 
   // --- Gender choice switches the whole palette ---------------------------
@@ -39,6 +39,19 @@
     });
   });
 
+  // --- Country picks its currency, until the user chooses one by hand ------
+  var country = form.elements.country;
+  var currency = form.elements.currency;
+  if (country && currency && country.dataset.currencyFor) {
+    var currencyFor = JSON.parse(country.dataset.currencyFor);
+    var currencyTouched = false;
+    currency.addEventListener("change", function () { currencyTouched = true; });
+    country.addEventListener("change", function () {
+      var code = currencyFor[country.value];
+      if (!currencyTouched && code) currency.value = code;
+    });
+  }
+
   // --- Remember the typed answers in this browser ------------------------
   function readDraft() {
     try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); } catch (e) { return {}; }
@@ -58,14 +71,8 @@
   });
   form.addEventListener("input", saveDraft);
 
-  // --- Client-side checks + loading overlay -------------------------------
-  var steps = [
-    "Reading proportions and colours",
-    "Studying face shape and skin tone",
-    "Matching brands to your budget",
-    "Finding where to buy nearby",
-    "Writing your routine",
-  ];
+  // --- Client-side checks + stepped loading overlay ------------------------
+  var STEP_MS = 6000;
 
   form.addEventListener("submit", function (event) {
     var gender = form.querySelector('input[name="gender"]:checked');
@@ -83,12 +90,16 @@
     saveDraft();
     document.getElementById("analyze-btn").disabled = true;
     var overlay = document.getElementById("overlay");
-    var label = document.getElementById("overlay-step");
+    var steps = overlay.querySelectorAll("[data-loader-step]");
     overlay.classList.remove("hidden");
     var i = 0;
-    setInterval(function () {
-      i = (i + 1) % steps.length;
-      label.textContent = steps[i];
-    }, 3500);
+    var timer = setInterval(function () {
+      // Advance through the steps; the last one stays active until the page changes.
+      if (i >= steps.length - 1) { clearInterval(timer); return; }
+      steps[i].classList.remove("active");
+      steps[i].classList.add("done");
+      i += 1;
+      steps[i].classList.add("active");
+    }, STEP_MS);
   });
 })();

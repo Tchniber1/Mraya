@@ -52,7 +52,8 @@ class MrayaTestCase(TestCase):
     def setUp(self):
         self._tmp = tempfile.mkdtemp()
         self._override = override_settings(
-            MRAYA_STORAGE="local", MRAYA_LOCAL_STORE_PATH=Path(self._tmp) / "store.json"
+            MRAYA_STORAGE="local", MRAYA_LOCAL_STORE_PATH=Path(self._tmp) / "store.json",
+            SERPER_API_KEY="",  # never spend real searches in tests
         )
         self._override.enable()
         get_repository.cache_clear()

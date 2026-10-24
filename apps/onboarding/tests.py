@@ -8,7 +8,7 @@ from apps.core.testing import SAMPLE_REPLY, FakeGemma, MrayaTestCase, image_byte
 
 def form_data(**overrides):
     data = {
-        "gender": "women", "age": "24", "budget": "3000", "currency": "MAD", "city": "Rabat",
+        "gender": "women", "age": "24", "budget": "3000", "currency": "MAD", "country": "ma", "city": "Rabat",
         "style_preferences": "elegant", "brand_preferences": "", "suggest_brands": "on",
         "interests": ["clothing", "perfume"],
         "full_body": SimpleUploadedFile("body.jpg", image_bytes(), "image/jpeg"),
@@ -31,6 +31,34 @@ class OnboardingTests(MrayaTestCase):
         response = self.client.get("/")
         self.assertContains(response, "Who are we styling?")
         self.assertContains(response, 'name="full_body"')
+
+    def test_analysis_keeps_its_own_thumbnails(self):
+        self.analyze(FakeGemma([SAMPLE_REPLY]))
+        analysis = self.repo.latest_analysis(self.uid)
+        self.assertTrue(analysis["body_thumb"].startswith("data:image/jpeg;base64,"))
+        self.assertTrue(analysis["face_thumb"].startswith("data:image/jpeg;base64,"))
+        self.assertEqual(analysis["budget"]["currency"], "MAD")
+
+    def test_country_is_saved_and_validated(self):
+        self.analyze(FakeGemma([SAMPLE_REPLY]), country="fr", currency="EUR")
+        user = self.repo.get_user(self.uid)
+        self.assertEqual((user["country"], user["currency"]), ("fr", "EUR"))
+        response = self.analyze(FakeGemma([SAMPLE_REPLY]), country="zz")
+        self.assertEqual(response.status_code, 400)
+
+    def test_home_has_stepped_loader_and_no_emoji(self):
+        content = self.client.get("/").content.decode()
+        for step in ("Reading your photos", "Building your plan", "Finding real products", "Fitting your budget"):
+            self.assertIn(step, content)
+        self.assertEqual(content.count("data-loader-step"), 4)
+        self.assertNotIn("🧍", content)
+
+    def test_home_offers_countries_and_currencies(self):
+        response = self.client.get("/")
+        self.assertContains(response, 'name="country"')
+        self.assertContains(response, '<option value="ma" selected>Morocco</option>', html=True)
+        self.assertContains(response, 'value="GBP"')
+        self.assertContains(response, "data-currency-for")
 
     def test_successful_analysis_saves_everything(self):
         response = self.analyze(FakeGemma([SAMPLE_REPLY]))

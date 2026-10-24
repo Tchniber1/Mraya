@@ -1,4 +1,4 @@
-/* Layout, typography (Montserrat) and the animated liquid background. */
+/* Layout, typography (Montserrat headings, Inter text) and the animated background. */
 *,
 *::before,
 *::after {
@@ -12,69 +12,119 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Montserrat", system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.55;
   color: var(--text);
-  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
-  background-attachment: fixed;
-  transition: background 0.6s ease, color 0.4s ease;
+  background: var(--bg-1); /* the gradient lives on .liquid-bg so it always fills the screen */
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  /* Theme switch: every registered colour token blends at the same pace. */
+  transition:
+    --bg-1 0.8s var(--ease), --bg-2 0.8s var(--ease),
+    --blob-1 0.8s var(--ease), --blob-2 0.8s var(--ease), --blob-3 0.8s var(--ease),
+    --text 0.8s var(--ease), --text-soft 0.8s var(--ease),
+    --accent 0.8s var(--ease), --accent-soft 0.8s var(--ease),
+    --primary 0.8s var(--ease), --primary-contrast 0.8s var(--ease), --success 0.8s var(--ease),
+    --surface 0.8s var(--ease), --surface-strong 0.8s var(--ease), --muted-bg 0.8s var(--ease),
+    --border 0.8s var(--ease), --input-bg 0.8s var(--ease), --ring 0.8s var(--ease),
+    --shadow-color 0.8s var(--ease), --glass-tint 0.8s var(--ease), --glass-edge 0.8s var(--ease);
 }
 
 /* --- Typography scale ------------------------------------------------- */
+.display,
+.headline,
+.section-title,
+.title,
+.dialog-title {
+  font-family: var(--font-display);
+}
+
 .display {
-  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-size: clamp(2.3rem, 6vw, 4rem);
   font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.02;
-  margin: 0;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  margin: 0 0 var(--space-3);
 }
 
 .headline {
-  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   line-height: 1.15;
-  margin: 0 0 0.4rem;
+  margin: 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
 .title {
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 1rem;
   font-weight: 700;
-  margin: 0 0 0.3rem;
+  margin: 0 0 var(--space-1);
 }
 
 .eyebrow {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-soft);
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2);
 }
 
 .lead {
-  font-size: 1.05rem;
-  font-weight: 400;
+  font-size: 1.06rem;
   color: var(--text-soft);
-  max-width: 46ch;
+  max-width: 52ch;
+  margin: 0;
 }
 
 .muted {
   color: var(--text-soft);
-  font-weight: 400;
+}
+
+.small {
+  font-size: 0.82rem;
 }
 
 .number {
-  font-weight: 800;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
 a {
   color: inherit;
+}
+
+.icon {
+  flex: none;
+  vertical-align: -0.15em;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* --- Liquid background blobs ------------------------------------------ */
@@ -84,6 +134,7 @@ a {
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
+  background: linear-gradient(140deg, var(--bg-1), var(--bg-2));
 }
 
 .liquid-bg span {
@@ -91,44 +142,37 @@ a {
   width: 46vmax;
   height: 46vmax;
   border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.7;
-  animation: drift 22s ease-in-out infinite alternate;
-  transition: background 0.8s ease;
+  filter: blur(90px);
+  opacity: 0.55;
+  animation: drift 26s ease-in-out infinite alternate;
 }
 
 .liquid-bg span:nth-child(1) {
   background: var(--blob-1);
-  top: -14vmax;
-  left: -10vmax;
+  top: -16vmax;
+  left: -12vmax;
 }
 
 .liquid-bg span:nth-child(2) {
   background: var(--blob-2);
-  bottom: -18vmax;
-  right: -12vmax;
-  animation-duration: 28s;
+  bottom: -20vmax;
+  right: -14vmax;
+  animation-duration: 32s;
 }
 
 .liquid-bg span:nth-child(3) {
   background: var(--blob-3);
-  top: 30%;
-  left: 40%;
-  width: 30vmax;
-  height: 30vmax;
-  opacity: 0.45;
-  animation-duration: 34s;
+  top: 34%;
+  left: 42%;
+  width: 28vmax;
+  height: 28vmax;
+  opacity: 0.32;
+  animation-duration: 38s;
 }
 
 @keyframes drift {
   to {
-    transform: translate(8vmax, 6vmax) scale(1.15) rotate(25deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .liquid-bg span {
-    animation: none;
+    transform: translate(7vmax, 5vmax) scale(1.12) rotate(20deg);
   }
 }
 
@@ -136,58 +180,108 @@ a {
 .shell {
   width: min(1180px, 100% - 32px);
   margin: 0 auto;
-  padding: 24px 0 64px;
+  padding: var(--space-4) 0 var(--space-10);
 }
 
-.nav {
+.topbar {
+  position: sticky;
+  top: var(--space-3);
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 14px 10px 20px;
-  margin-bottom: 32px;
+  gap: var(--space-3);
+  padding: 6px 6px 6px var(--space-5);
+  margin-bottom: var(--space-8);
   border-radius: 999px;
 }
 
 .brand {
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
   text-decoration: none;
+  border-radius: var(--radius-sm);
 }
 
-.brand em {
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: 800 1.25rem/1 var(--font-display);
+  letter-spacing: -0.04em;
+}
+
+.logo em {
   font-style: normal;
   color: var(--accent);
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  filter: drop-shadow(0 2px 4px rgba(20, 24, 36, 0.16));
 }
 
-.nav-links form {
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.topbar-links form {
   margin: 0;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 @media (max-width: 720px) {
   .grid-2 {
     grid-template-columns: 1fr;
   }
-  .nav {
-    border-radius: 24px;
-    flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .hide-sm {
+    display: none;
+  }
+  .topbar {
+    padding-left: var(--space-4);
   }
 }
 
 .hidden {
   display: none !important;
+}
+
+/* --- Motion preferences ------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .liquid-bg span {
+    animation: none;
+  }
 }

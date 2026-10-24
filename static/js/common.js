@@ -36,7 +36,15 @@
     el.className = "toast glass";
     el.textContent = text;
     box.appendChild(el);
-    setTimeout(function () { el.remove(); }, 3800);
+    dismiss(el, 3800);
+  }
+
+  function dismiss(el, delay) {
+    setTimeout(function () {
+      el.classList.add("leaving");
+      el.addEventListener("animationend", function () { el.remove(); }, { once: true });
+      setTimeout(function () { el.remove(); }, 600); // reduced motion: no animationend
+    }, delay);
   }
 
   // Apply the theme instantly, then remember it server-side (session + cookie).
@@ -53,9 +61,7 @@
   }
 
   // Server-rendered toasts fade out on their own.
-  document.querySelectorAll("#toasts .toast").forEach(function (el) {
-    setTimeout(function () { el.remove(); }, 4500);
-  });
+  document.querySelectorAll("#toasts .toast").forEach(function (el) { dismiss(el, 4500); });
 
   window.Mraya = { csrfToken: csrfToken, postJSON: postJSON, toast: toast, setTheme: setTheme };
 })();

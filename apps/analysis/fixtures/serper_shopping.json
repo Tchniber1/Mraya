@@ -1,0 +1,7 @@
+{"searchParameters": {"q": "CeraVe Hydrating Cleanser 236ml", "gl": "ma", "type": "shopping"},
+ "shopping": [
+  {"title": "CeraVe Hydrating Cleanser 236ml", "source": "Pharma Express", "link": "https://example-pharma.ma/cerave-noimg", "price": "MAD 60.00", "position": 1},
+  {"title": "CeraVe Hydrating Cleanser 236ml", "source": "SweetCare", "link": "https://www.sweetcare.com/ma/cerave-hydrating-cleanser", "price": "MAD 94.09", "imageUrl": "https://img.example/sweetcare.jpg", "position": 2},
+  {"title": "CeraVe Gel Nettoyant 236ml", "source": "Kiyo Beauty", "link": "https://kiyobeauty.ma/cerave", "price": "MAD 153.05", "imageUrl": "https://img.example/kiyo.jpg", "position": 3},
+  {"title": "CeraVe Hydrating Facial Cleanser", "source": "Health Pharmacy", "link": "https://healthpharmacy.ma/cerave", "price": "MAD 183.48", "imageUrl": "https://img.example/health.jpg", "position": 4}
+ ]}

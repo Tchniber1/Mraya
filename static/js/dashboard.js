@@ -2,6 +2,8 @@
 (function () {
   "use strict";
 
+  var BADGE_LABELS = { started: "Bought", not_yet: "Not yet", not_interested: "Not for me", suggested: "New" };
+
   function renderProgress(progress) {
     document.getElementById("level-ring").style.setProperty("--pct", progress.progress_pct);
     document.getElementById("level-number").textContent = progress.level;
@@ -27,6 +29,8 @@
         window.Mraya.postJSON("/dashboard/products/" + card.dataset.product + "/status/", { status: status })
           .then(function (data) {
             card.dataset.status = data.status;
+            var badge = card.querySelector("[data-status-label]");
+            if (badge) badge.textContent = BADGE_LABELS[data.status] || "New";
             card.querySelectorAll(".status-group button").forEach(function (b) {
               b.setAttribute("aria-pressed", String(b.dataset.status === data.status));
             });
@@ -34,7 +38,7 @@
             updateStartedCount();
             if (data.xp_gained) window.Mraya.toast("+" + data.xp_gained + " XP");
             if (data.progress.level > previousLevel) {
-              window.Mraya.toast("Level up! You are now a " + data.progress.title + " ✦");
+              window.Mraya.toast("Level up! You are now a " + data.progress.title + ".");
             }
           })
           .catch(function (err) {

@@ -35,17 +35,17 @@ def analyze(request):
         return render(request, "core/home.html", {"form": form, "user_doc": repo.get_user(uid) or {}}, status=502)
 
     existing = repo.get_user(uid) or {}
+    thumbs = {"body_thumb": images.thumbnail_data_uri(body), "face_thumb": images.thumbnail_data_uri(face)}
     repo.save_user(
         uid,
         {
             **profile,
-            "body_thumb": images.thumbnail_data_uri(body),
-            "face_thumb": images.thumbnail_data_uri(face),
+            **thumbs,
             "has_analysis": True,
             "profile_xp_awarded": True,
         },
     )
-    repo.add_analysis(uid, analysis, products)
+    repo.add_analysis(uid, {**analysis, **thumbs}, products)
 
     gained = XP_EVENTS["analysis_completed"]
     if not existing.get("profile_xp_awarded"):

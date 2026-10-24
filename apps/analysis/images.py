@@ -47,3 +47,14 @@ def thumbnail_data_uri(image):
     """Small JPEG data URI for the private dashboard."""
     data = base64.b64encode(_jpeg_bytes(image, THUMB_MAX_SIDE, 75)).decode("ascii")
     return f"data:image/jpeg;base64,{data}"
+
+
+AVATAR_SIDE = 256
+
+
+def avatar_data_uri(image):
+    """Centre-cropped square JPEG data URI for the profile picture."""
+    square = ImageOps.fit(image, (AVATAR_SIDE, AVATAR_SIDE), method=Image.LANCZOS)
+    buffer = io.BytesIO()
+    square.save(buffer, format="JPEG", quality=82, optimize=True)
+    return "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")

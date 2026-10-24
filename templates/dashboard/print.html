@@ -1,0 +1,50 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buying list · Mraya</title>
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/print.css' %}">
+</head>
+<body>
+  <header class="print-head">
+    {% include "partials/logo.html" %}
+    <div>
+      <h1>Buying list</h1>
+      <p class="muted">Style plan from {{ analysis.created_at|slice:":10" }} · {{ items|length }} item{{ items|length|pluralize }}</p>
+    </div>
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  </header>
+
+  <table class="print-table">
+    <thead>
+      <tr><th scope="col"></th><th scope="col">Product</th><th scope="col">Store</th><th scope="col">Status</th><th scope="col" class="num">Price</th></tr>
+    </thead>
+    <tbody>
+      {% for p in items %}
+        <tr>
+          <td class="thumb">{% if p.image_url %}<img src="{{ p.image_url }}" alt="" referrerpolicy="no-referrer">{% endif %}</td>
+          <td>
+            <strong>{{ p.brand }} {{ p.name }}</strong>
+            {% if p.link %}<br><a href="{{ p.link }}" target="_blank" rel="noopener noreferrer">{{ p.link|truncatechars:70 }}</a>{% endif %}
+          </td>
+          <td>{{ p.store|default:p.where_to_buy|default:"—" }}</td>
+          <td>{% if p.status == "started" %}Bought{% elif p.status == "not_yet" %}Not yet{% else %}To decide{% endif %}</td>
+          <td class="num">{% if p.price is not None %}{{ p.price|floatformat:"-2" }} {{ p.currency }}{% else %}—{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="muted">Nothing to buy yet: every product is marked "Not for me".</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><th scope="row" colspan="4">Total</th><td class="num"><strong>{{ total|floatformat:"-2" }} {{ currency }}</strong></td></tr>
+    </tfoot>
+  </table>
+  <p class="muted small">Prices come from the stores at the time of your analysis and may have changed.</p>
+</body>
+</html>

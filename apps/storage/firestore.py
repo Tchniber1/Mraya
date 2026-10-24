@@ -38,19 +38,39 @@ class FirestoreRepository(Repository):
         batch.commit()
         return analysis["id"]
 
-    def latest_analysis(self, uid):
-        query = (
-            self._user(uid)
-            .collection("analyses")
-            .order_by("created_at", direction="DESCENDING")
-            .limit(1)
-        )
-        docs = list(query.stream())
-        return docs[0].to_dict() if docs else None
+    def _analyses(self, uid):
+        return [doc.to_dict() for doc in self._user(uid).collection("analyses").stream()]
 
-    def list_products(self, uid):
+    def latest_analysis(self, uid):
+        analyses = self._analyses(uid)
+        return max(analyses, key=lambda a: a["created_at"]) if analyses else None
+
+    def list_analyses(self, uid):
+        products = [doc.to_dict() for doc in self._user(uid).collection("products").stream()]
+        return self._with_counts(self._analyses(uid), products)
+
+    def get_analysis(self, uid, analysis_id):
+        snap = self._user(uid).collection("analyses").document(analysis_id).get()
+        return snap.to_dict() if snap.exists else None
+
+    def delete_analysis(self, uid, analysis_id):
+        user = self._user(uid)
+        ref = user.collection("analyses").document(analysis_id)
+        if not ref.get().exists:
+            return False
+        batch = self.db.batch()
+        batch.delete(ref)
+        for doc in user.collection("products").where("analysis_id", "==", analysis_id).stream():
+            batch.delete(user.collection("products").document(doc.to_dict()["id"]))
+        batch.commit()
+        return True
+
+    def list_products(self, uid, analysis_id=None):
         # Sorted in Python to avoid needing a composite Firestore index.
-        items = [doc.to_dict() for doc in self._user(uid).collection("products").stream()]
+        products = self._user(uid).collection("products")
+        if analysis_id is not None:
+            products = products.where("analysis_id", "==", analysis_id)
+        items = [doc.to_dict() for doc in products.stream()]
         return sorted(items, key=lambda p: (p["created_at"], -p.get("order", 0)), reverse=True)
 
     def get_product(self, uid, product_id):

@@ -1,0 +1,620 @@
+/* Components in the spirit of shadcn/ui, in plain CSS: button, card, badge, avatar,
+   menu, dialog, tabs, progress, segmented control, skeleton, toast, tooltip, fields. */
+
+/* --- Button --------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: var(--muted-bg);
+  color: var(--text);
+  font: 600 0.9rem/1 var(--font-body);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease), transform 0.15s var(--ease), opacity 0.2s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:focus-visible,
+.avatar-btn:focus-visible,
+.tab-list [role="tab"]:focus-visible,
+.segmented button:focus-visible,
+.menu [role="menuitem"]:focus-visible,
+.brand:focus-visible,
+.chip-toggle:has(input:focus-visible),
+.choice:has(input:focus-visible) {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface-strong), 0 0 0 4px var(--ring);
+}
+
+.btn-default,
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  box-shadow: 0 1px 2px var(--shadow-color), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.btn-default:hover,
+.btn-primary:hover {
+  opacity: 0.92;
+}
+
+.btn-secondary {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.btn-outline {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: 0 1px 2px var(--shadow-color);
+}
+
+.btn-outline:hover,
+.btn-ghost:hover,
+.btn-secondary:hover,
+.btn:not([class*="btn-"]):hover {
+  background: var(--muted-bg);
+}
+
+.btn-outline:hover {
+  border-color: var(--ring);
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.btn-destructive {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-destructive:hover {
+  opacity: 0.9;
+}
+
+.btn-danger {
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: rgba(220, 38, 38, 0.1) !important;
+}
+
+.btn-sm {
+  height: 34px;
+  padding: 0 var(--space-3);
+  font-size: 0.84rem;
+  border-radius: 10px;
+}
+
+.btn-lg {
+  height: 50px;
+  padding: 0 var(--space-6);
+  font-size: 0.98rem;
+  border-radius: 14px;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: progress;
+  transform: none;
+}
+
+/* --- Card ----------------------------------------------------------------- */
+.card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: 0 1px 2px var(--shadow-color), 0 6px 24px -12px var(--shadow-color);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.card-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 var(--space-2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+  color: var(--text-soft);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.empty-state p {
+  margin: 0;
+}
+
+/* --- Badge ---------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--muted-bg);
+  color: var(--text);
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.badge-outline {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-soft);
+}
+
+.badge-accent {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* --- Avatar --------------------------------------------------------------- */
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--accent-soft);
+  color: var(--text);
+  font: 700 0.8rem/1 var(--font-body);
+  flex: none;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-xl {
+  width: 96px;
+  height: 96px;
+  font-size: 1.8rem;
+  box-shadow: 0 0 0 4px var(--surface-strong), 0 8px 24px var(--shadow-color);
+}
+
+.avatar-btn {
+  display: inline-flex;
+  padding: 2px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* --- Dropdown menu -------------------------------------------------------- */
+.menu-wrap {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  min-width: 230px;
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  /* Solid: a menu inside the glass top bar can't blur the page behind it
+     (the bar's own backdrop-filter becomes its backdrop root), so text must not show through. */
+  background: var(--surface-strong);
+  transform-origin: top left;
+  animation: pop-in 0.18s var(--ease) both;
+}
+
+.menu-right {
+  left: auto;
+  right: 0;
+  transform-origin: top right;
+}
+
+.menu [role="menuitem"] {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  font: 500 0.9rem/1.2 var(--font-body);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu [role="menuitem"]:hover,
+.menu [role="menuitem"]:focus-visible {
+  background: var(--muted-bg);
+}
+
+.menu form {
+  margin: 0;
+}
+
+.menu-label {
+  position: relative;
+  z-index: 2;
+  padding: 8px 10px 6px;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.menu-label small {
+  display: block;
+  font-weight: 400;
+  color: var(--text-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.separator {
+  position: relative;
+  z-index: 2;
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--border);
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+}
+
+/* --- Dialog --------------------------------------------------------------- */
+.dialog {
+  position: fixed; /* .glass sets relative; modal dialogs must stay fixed and centred */
+  width: min(440px, calc(100% - 32px));
+  padding: var(--space-6);
+  border: 0;
+  color: var(--text);
+  background: var(--glass-tint);
+}
+
+.dialog[open] {
+  animation: pop-in 0.22s var(--ease) both;
+}
+
+.dialog::backdrop {
+  background: rgba(10, 10, 14, 0.38);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.dialog > * {
+  position: relative;
+  z-index: 2;
+}
+
+.dialog-title {
+  margin: 0 0 var(--space-2);
+  font-size: 1.15rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+/* --- Tabs ----------------------------------------------------------------- */
+.tab-list {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  padding: 4px;
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--muted-bg);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-list [role="tab"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-soft);
+  font: 600 0.86rem/1.2 var(--font-body);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.tab-list [role="tab"][aria-selected="true"] {
+  background: var(--surface-strong);
+  color: var(--text);
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+[data-panel][hidden] {
+  display: none;
+}
+
+/* --- Progress ------------------------------------------------------------- */
+.progress {
+  height: 8px;
+  margin: var(--space-2) 0;
+  border-radius: 999px;
+  background: var(--muted-bg);
+  overflow: hidden;
+}
+
+.progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  transition: width 0.6s var(--ease);
+}
+
+.progress-thin {
+  height: 5px;
+}
+
+/* --- Segmented control ---------------------------------------------------- */
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--muted-bg);
+}
+
+.segmented button {
+  flex: 1;
+  padding: 7px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-soft);
+  font: 600 0.78rem/1.1 var(--font-body);
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.segmented button:hover {
+  color: var(--text);
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--surface-strong);
+  color: var(--text);
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+/* --- Skeleton ------------------------------------------------------------- */
+.skeleton {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--muted-bg) 0%, var(--accent-soft) 50%, var(--muted-bg) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* --- Toast (Sonner-style) ------------------------------------------------- */
+.toasts {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: min(380px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  pointer-events: auto;
+  animation: toast-in 0.4s var(--ease) both;
+}
+
+.toast.leaving {
+  animation: toast-out 0.3s var(--ease) both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+
+/* --- Tooltip -------------------------------------------------------------- */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: var(--text);
+  color: var(--surface-strong);
+  font: 500 0.75rem/1.2 var(--font-body);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* --- Form fields ---------------------------------------------------------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.input,
+.field input[type="text"],
+.field input[type="number"],
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  font: 400 0.94rem/1.4 var(--font-body);
+  box-shadow: 0 1px 2px var(--shadow-color);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.input:focus,
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field select option {
+  color: #1d1d1d;
+}
+
+.errorlist,
+.field-error {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  color: var(--danger);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+[data-theme="men"] .errorlist,
+[data-theme="men"] .field-error {
+  color: #fca5a5;
+}
+
+.alert {
+  position: relative;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  margin: 0 0 var(--space-4);
+  border-left: 3px solid var(--danger);
+}
+
+/* --- Toggle chips --------------------------------------------------------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.chip-toggle {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.chip-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chip-toggle:has(input:checked) {
+  background: var(--primary);
+  border-color: transparent;
+  color: var(--primary-contrast);
+}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static ui %}
+{% block title %}History{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Your analyses</p>
+    <h1 class="headline">History</h1>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-default" href="{% url 'core:home' %}">{% icon "plus" %} New analysis</a>
+  </div>
+</section>
+
+{% if analyses %}
+  <div class="history-grid">
+    {% for item in analyses %}
+      <article class="card history-card">
+        <a class="history-link" href="{% url 'dashboard:detail' item.id %}">
+          <div class="history-photos">
+            {% if item.body %}<img src="{{ item.body }}" alt="">{% endif %}
+            {% if item.face %}<img src="{{ item.face }}" alt="">{% endif %}
+          </div>
+          <div class="history-body">
+            <p class="card-label">{{ item.created_at|slice:":10" }}{% if forloop.first %} · <span class="badge badge-accent">Latest</span>{% endif %}</p>
+            <p class="history-summary">{{ item.summary|truncatechars:140 }}</p>
+            <p class="muted small">
+              {% if item.style_score is not None %}<span class="number">{{ item.style_score }}</span>/100 · {% endif %}
+              {{ item.product_count }} product{{ item.product_count|pluralize }}
+              {% if item.budget %} · {{ item.budget.used|floatformat:"-2" }} / {{ item.budget.limit|floatformat:"-2" }} {{ item.budget.currency }}{% endif %}
+            </p>
+          </div>
+        </a>
+        <button class="btn btn-ghost btn-icon btn-danger" type="button" data-dialog-open="delete-{{ item.id }}" aria-label="Delete analysis from {{ item.created_at|slice:':10' }}">
+          {% icon "trash" 16 %}
+        </button>
+
+        <dialog class="dialog glass" id="delete-{{ item.id }}" aria-labelledby="delete-title-{{ item.id }}">
+          <form method="post" action="{% url 'dashboard:delete' item.id %}">
+            {% csrf_token %}
+            <h2 class="dialog-title" id="delete-title-{{ item.id }}">Delete this analysis?</h2>
+            <p class="muted">Its {{ item.product_count }} product{{ item.product_count|pluralize }} will be removed. The XP you earned stays.</p>
+            <div class="dialog-actions">
+              <button class="btn btn-outline" type="button" data-dialog-close>Cancel</button>
+              <button class="btn btn-destructive" type="submit">{% icon "trash" 16 %} Delete</button>
+            </div>
+          </form>
+        </dialog>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card empty-state">
+    <p class="title">No analyses yet</p>
+    <p class="muted">Upload two photos and Mraya builds your first style plan.</p>
+    <a class="btn btn-default" href="{% url 'core:home' %}">{% icon "plus" %} Start an analysis</a>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}{% endblock %}

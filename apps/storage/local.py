@@ -85,10 +85,37 @@ class LocalJsonRepository(Repository):
             latest = max(bucket["analyses"].values(), key=lambda a: a["created_at"])
             return copy.deepcopy(latest)
 
-    def list_products(self, uid):
+    def list_analyses(self, uid):
+        with _LOCK:
+            bucket = self._load()["users"].get(uid)
+            if not bucket:
+                return []
+            return copy.deepcopy(self._with_counts(bucket["analyses"].values(), bucket["products"].values()))
+
+    def get_analysis(self, uid, analysis_id):
+        with _LOCK:
+            bucket = self._load()["users"].get(uid)
+            return copy.deepcopy(bucket["analyses"].get(analysis_id)) if bucket else None
+
+    def delete_analysis(self, uid, analysis_id):
+        with _LOCK:
+            data = self._load()
+            bucket = data["users"].get(uid)
+            if not bucket or analysis_id not in bucket["analyses"]:
+                return False
+            del bucket["analyses"][analysis_id]
+            bucket["products"] = {
+                pid: p for pid, p in bucket["products"].items() if p.get("analysis_id") != analysis_id
+            }
+            self._dump(data)
+            return True
+
+    def list_products(self, uid, analysis_id=None):
         with _LOCK:
             bucket = self._load()["users"].get(uid)
             items = list(bucket["products"].values()) if bucket else []
+        if analysis_id is not None:
+            items = [p for p in items if p.get("analysis_id") == analysis_id]
         return copy.deepcopy(sorted(items, key=_product_sort_key, reverse=True))
 
     def get_product(self, uid, product_id):

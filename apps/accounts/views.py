@@ -56,7 +56,13 @@ def firebase_session(request):
         "name": claims.get("name", ""),
         "picture": claims.get("picture", ""),
     }
-    saved = get_repository().save_user(uid, {"email": profile["email"], "display_name": profile["name"]})
+    repo = get_repository()
+    existing = repo.get_user(uid) or {}
+    saved = repo.save_user(uid, {
+        "email": profile["email"],
+        "display_name": existing.get("display_name") or profile["name"],  # keep a name changed in Settings
+        "google_picture": profile["picture"],
+    })
     login_user(request, uid, gender=saved.get("gender", ""), **profile)
     return JsonResponse({"redirect": _after_login_url(uid)})
 

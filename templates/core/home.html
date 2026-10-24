@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static ui %}
 {% block title %}Your style analysis{% endblock %}
 {% block styles %}<link rel="stylesheet" href="{% static 'css/home.css' %}">{% endblock %}
 
@@ -15,24 +15,26 @@
 
   <fieldset class="gender-choice" style="border:0;padding:0;margin:0 0 28px">
     <legend class="hidden">Gender</legend>
-    <label class="choice glass">
+    <label class="choice card">
       <input type="radio" name="gender" value="men" {% if form.gender.value == "men" %}checked{% endif %} required>
       <span class="swatches" aria-hidden="true"><i style="background:#0d1321"></i><i style="background:#1d2d44"></i><i style="background:#3e5c76"></i><i style="background:#748cab"></i><i style="background:#f0ebd8"></i></span>
       <span class="choice-title">Man</span>
       <span class="muted">Midnight navy palette</span>
+      <span class="choice-check" aria-hidden="true">{% icon "check" 16 %}</span>
     </label>
-    <label class="choice glass">
+    <label class="choice card">
       <input type="radio" name="gender" value="women" {% if form.gender.value == "women" %}checked{% endif %} required>
       <span class="swatches" aria-hidden="true"><i style="background:#880d1e"></i><i style="background:#dd2d4a"></i><i style="background:#f26a8d"></i><i style="background:#f49cbb"></i><i style="background:#cbeef3"></i></span>
       <span class="choice-title">Woman</span>
       <span class="muted">Rose &amp; ice palette</span>
+      <span class="choice-check" aria-hidden="true">{% icon "check" 16 %}</span>
     </label>
   </fieldset>
   {{ form.gender.errors }}
 
-  <div class="step-form glass panel {% if not form.gender.value %}locked{% endif %}" id="step-form">
+  <div class="step-form card {% if not form.gender.value %}locked{% endif %}" id="step-form">
     {% if form.non_field_errors %}
-      <div class="alert glass" role="alert">{{ form.non_field_errors|join:" " }}</div>
+      <div class="alert card" role="alert">{{ form.non_field_errors|join:" " }}</div>
     {% endif %}
 
     <section class="form-section">
@@ -41,7 +43,7 @@
         <div>
           <label class="dropzone" data-dropzone>
             <input type="file" name="full_body" accept="image/jpeg,image/png,image/webp" required>
-            <span class="dz-icon" aria-hidden="true">🧍</span>
+            <span class="dz-icon" aria-hidden="true">{% icon "user" 28 %}</span>
             <span class="dz-title">Full-body photo</span>
             <span class="dz-hint muted">Head to toe, good light, plain background</span>
           </label>
@@ -50,7 +52,7 @@
         <div>
           <label class="dropzone" data-dropzone>
             <input type="file" name="face" accept="image/jpeg,image/png,image/webp" required>
-            <span class="dz-icon" aria-hidden="true">🙂</span>
+            <span class="dz-icon" aria-hidden="true">{% icon "sparkles" 28 %}</span>
             <span class="dz-title">Face close-up</span>
             <span class="dz-hint muted">No filter, face the light, hair visible</span>
           </label>
@@ -73,11 +75,16 @@
           {{ form.budget.errors }}
         </div>
         <div class="field">
+          <label class="label" for="id_country">Shopping country</label>
+          {{ form.country }}
+          {{ form.country.errors }}
+        </div>
+        <div class="field">
           <label class="label" for="id_currency">Currency</label>
           {{ form.currency }}
         </div>
         <div class="field">
-          <label class="label" for="id_city">City / country</label>
+          <label class="label" for="id_city">City</label>
           {{ form.city }}
         </div>
         <div class="field span-2">
@@ -103,7 +110,7 @@
 
     <div class="submit-row">
       <p class="muted" style="margin:0">Analysed by <strong>{{ gemma_model }}</strong>. Photos are shrunk and never shared.</p>
-      <button class="btn btn-primary btn-lg" type="submit" id="analyze-btn">Analyze my style ✦</button>
+      <button class="btn btn-default btn-lg" type="submit" id="analyze-btn">{% icon "sparkles" %} Analyze my style</button>
     </div>
   </div>
 </form>
@@ -111,8 +118,17 @@
 <div class="overlay hidden" id="overlay" role="status" aria-live="polite">
   <div class="overlay-card glass">
     <div class="orb" aria-hidden="true"></div>
-    <p class="title">Gemma is studying your look…</p>
-    <p class="muted" id="overlay-step">Reading proportions and colours</p>
+    <p class="title overlay-title">Mraya is studying your look…</p>
+    <ol class="loader-steps">
+      <li data-loader-step class="active"><span class="step-dot" aria-hidden="true"></span>Reading your photos</li>
+      <li data-loader-step><span class="step-dot" aria-hidden="true"></span>Building your plan</li>
+      <li data-loader-step><span class="step-dot" aria-hidden="true"></span>Finding real products</li>
+      <li data-loader-step><span class="step-dot" aria-hidden="true"></span>Fitting your budget</li>
+    </ol>
+    <div class="loader-skeletons" aria-hidden="true">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+    <p class="muted small">This usually takes 30–60 seconds. Keep this tab open.</p>
   </div>
 </div>
 {% endblock %}

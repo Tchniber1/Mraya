@@ -1,104 +1,129 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static ui %}
 {% block title %}Dashboard{% endblock %}
 {% block styles %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
 
 {% block content %}
-<section class="dash-head">
+<section class="page-head">
   <div>
-    <p class="eyebrow">Private dashboard</p>
+    <p class="eyebrow">{{ analysis.created_at|slice:":10" }} · Private plan</p>
     <h1 class="headline">{% if user.display_name %}{{ user.display_name }}'s{% else %}Your{% endif %} style plan</h1>
   </div>
-  <a class="btn btn-primary" href="{% url 'core:home' %}">New analysis</a>
-</section>
-
-<div class="dash-grid">
-  <aside class="dash-side">
-    {% if user.body_thumb or user.face_thumb %}
-      <div class="glass panel">
-        <div class="photos">
-          {% if user.body_thumb %}<img src="{{ user.body_thumb }}" alt="Your full-body photo">{% endif %}
-          {% if user.face_thumb %}<img src="{{ user.face_thumb }}" alt="Your face photo">{% endif %}
-        </div>
-      </div>
-    {% endif %}
-
-    <div class="glass panel" id="progress-card">
-      <div class="level">
-        <div class="ring" id="level-ring" style="--pct: {{ progress.progress_pct }}">
-          <div class="ring-inner"><small>Level</small><span class="number" id="level-number">{{ progress.level }}</span></div>
-        </div>
-        <div>
-          <p class="eyebrow" style="margin:0">Rank</p>
-          <p class="title" id="level-title">{{ progress.title }}</p>
-          <p class="muted" style="margin:0"><span class="number" id="xp-total">{{ progress.xp }}</span> XP</p>
-        </div>
-      </div>
-      <div class="xp-bar" aria-hidden="true"><span id="xp-fill" style="width: {{ progress.progress_pct }}%"></span></div>
-      <p class="muted" style="margin:0;font-size:.82rem"><span id="xp-to-next">{{ progress.xp_to_next }}</span> XP to the next level</p>
-
-      <div class="stats">
-        <div class="stat"><span class="number" id="count-started">{{ counts.started }}</span><span class="label">Started</span></div>
-        <div class="stat"><span class="number">{{ total_products }}</span><span class="label">Products</span></div>
+  <div class="page-actions">
+    <a class="btn btn-ghost" href="{% url 'dashboard:history' %}">{% icon "history" %} History</a>
+    <div class="menu-wrap" data-menu>
+      <button class="btn btn-outline" type="button" aria-haspopup="menu" aria-expanded="false" data-menu-trigger>
+        {% icon "download" %} Export {% icon "chevron-down" 14 %}
+      </button>
+      <div class="menu glass" role="menu" hidden>
+        <a role="menuitem" href="{% url 'dashboard:export_csv' analysis.id %}">{% icon "download" 16 %} Buying list (CSV)</a>
+        <a role="menuitem" href="{% url 'dashboard:export_print' analysis.id %}" target="_blank" rel="noopener">{% icon "printer" 16 %} Print / Save as PDF</a>
       </div>
     </div>
-  </aside>
+    <a class="btn btn-default" href="{% url 'core:home' %}">{% icon "plus" %} New analysis</a>
+  </div>
+</section>
 
-  <div class="dash-main">
-    <section class="glass panel">
-      <div class="category-head">
-        <div>
-          <p class="eyebrow">Mraya says</p>
-          <p class="lead" style="max-width:none;color:var(--text)">{{ analysis.summary }}</p>
-        </div>
-        {% if analysis.style_score is not None %}
-          <div class="score"><span class="number">{{ analysis.style_score }}</span><span class="muted">/ 100 style score</span></div>
-        {% endif %}
+<section class="summary-row">
+  <div class="card stat-card">
+    <p class="card-label">Style score</p>
+    {% if analysis.style_score is not None %}
+      <p class="stat-value number">{{ analysis.style_score }}<span class="stat-unit">/100</span></p>
+    {% else %}<p class="stat-value">—</p>{% endif %}
+    <p class="muted small">{{ analysis.style_profile.style_archetype|default:"Your current look" }}</p>
+  </div>
+
+  <div class="card stat-card">
+    <p class="card-label">{% icon "wallet" 16 %} Budget</p>
+    {% if budget %}
+      <p class="stat-value number">{{ budget.used|floatformat:"-2" }}<span class="stat-unit"> {{ budget.currency }}</span></p>
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ budget_pct }}" aria-label="Budget used">
+        <span style="width: {{ budget_pct }}%"></span>
       </div>
-      <div class="chips profile-chips">
-        {% for key, value in analysis.style_profile.items %}
-          {% if value %}<span class="chip">{{ value }}</span>{% endif %}
-        {% endfor %}
+      <p class="muted small">{{ budget.used|floatformat:"-2" }} of {{ budget.limit|floatformat:"-2" }} {{ budget.currency }} used{% if budget.dropped %} · {{ budget.dropped }} pick{{ budget.dropped|pluralize }} removed to fit{% endif %}</p>
+    {% else %}
+      <p class="stat-value">—</p><p class="muted small">Budget tracking starts with your next analysis.</p>
+    {% endif %}
+  </div>
+
+  <div class="card stat-card level-card" id="progress-card">
+    <div class="ring" id="level-ring" style="--pct: {{ progress.progress_pct }}">
+      <div class="ring-inner"><small>Level</small><span class="number" id="level-number">{{ progress.level }}</span></div>
+    </div>
+    <div class="level-text">
+      <p class="card-label">Rank</p>
+      <p class="title" id="level-title">{{ progress.title }}</p>
+      <p class="muted small"><span class="number" id="xp-total">{{ progress.xp }}</span> XP · <span id="xp-to-next">{{ progress.xp_to_next }}</span> to next</p>
+      <div class="progress progress-thin" aria-hidden="true"><span id="xp-fill" style="width: {{ progress.progress_pct }}%"></span></div>
+      <p class="muted small"><span class="number" id="count-started">{{ counts.started }}</span> of {{ total_products }} started</p>
+    </div>
+  </div>
+</section>
+
+<section class="card overview">
+  {% if photos.body or photos.face %}
+    <div class="photos">
+      {% if photos.body %}<img src="{{ photos.body }}" alt="Your full-body photo">{% endif %}
+      {% if photos.face %}<img src="{{ photos.face }}" alt="Your face photo">{% endif %}
+    </div>
+  {% endif %}
+  <div>
+    <p class="card-label">Mraya says</p>
+    <p class="overview-summary">{{ analysis.summary }}</p>
+    <div class="chips">
+      {% for key, value in analysis.style_profile.items %}{% if value %}<span class="badge badge-outline">{{ value }}</span>{% endif %}{% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if analysis.routine.morning or analysis.routine.evening %}
+  <section class="card routine">
+    <p class="card-label">Daily routine</p>
+    <div class="grid-2">
+      <div><p class="title">{% icon "sun" %} Morning</p><ol>{% for step in analysis.routine.morning %}<li>{{ step }}</li>{% endfor %}</ol></div>
+      <div><p class="title">{% icon "moon" %} Evening</p><ol>{% for step in analysis.routine.evening %}<li>{{ step }}</li>{% endfor %}</ol></div>
+    </div>
+  </section>
+{% endif %}
+
+<div class="tabs" data-tabs>
+  <div class="tab-list" role="tablist" aria-label="Product categories">
+    <button type="button" role="tab" aria-selected="true" data-tab="all">All</button>
+    {% for group in groups %}
+      <button type="button" role="tab" aria-selected="false" data-tab="{{ group.key }}">{% icon group.icon 16 %} {{ group.label }}</button>
+    {% endfor %}
+    {% if abroad %}<button type="button" role="tab" aria-selected="false" data-tab="abroad">{% icon "globe" 16 %} Abroad</button>{% endif %}
+  </div>
+
+  {% for group in groups %}
+    <section class="category" data-panel="{{ group.key }}" aria-labelledby="cat-{{ group.key }}">
+      <div class="category-head">
+        <h2 class="section-title" id="cat-{{ group.key }}">{% icon group.icon %} {{ group.label }}</h2>
+        {% if not group.empty %}<span class="muted small">{{ group.products|length }} pick{{ group.products|length|pluralize }}</span>{% endif %}
+      </div>
+      {% if group.advice %}<p class="muted category-advice">{{ group.advice }}</p>{% endif %}
+      {% if group.empty %}
+        <div class="card empty-state">{% icon "wallet" 20 %} No pick fits your budget in this category. Try a bigger budget or fewer categories.</div>
+      {% else %}
+        <div class="products">
+          {% for product in group.products %}{% include "dashboard/_product.html" %}{% endfor %}
+        </div>
+      {% endif %}
+    </section>
+  {% endfor %}
+
+  {% if abroad %}
+    <section class="category abroad" data-panel="abroad" aria-labelledby="cat-abroad">
+      <div class="category-head">
+        <h2 class="section-title" id="cat-abroad">{% icon "globe" %} Not sold in {{ home_country }} — available abroad</h2>
+        <span class="muted small">{{ abroad|length }} pick{{ abroad|length|pluralize }}</span>
+      </div>
+      <p class="muted category-advice">Price may not include shipping or customs.</p>
+      <div class="products">
+        {% for product in abroad %}{% include "dashboard/_product.html" with in_abroad=True %}{% endfor %}
       </div>
     </section>
-
-    {% if analysis.routine.morning or analysis.routine.evening %}
-      <section class="glass panel routine">
-        <p class="eyebrow">Daily routine</p>
-        <div class="grid-2">
-          <div><p class="title">☀ Morning</p><ol>{% for step in analysis.routine.morning %}<li>{{ step }}</li>{% endfor %}</ol></div>
-          <div><p class="title">☾ Evening</p><ol>{% for step in analysis.routine.evening %}<li>{{ step }}</li>{% endfor %}</ol></div>
-        </div>
-      </section>
-    {% endif %}
-
-    {% for group in groups %}
-      <section class="glass panel" aria-labelledby="cat-{{ group.key }}">
-        <div class="category-head">
-          <h2 class="headline" id="cat-{{ group.key }}">{{ group.label }}</h2>
-          <span class="muted">{{ group.products|length }} pick{{ group.products|length|pluralize }}</span>
-        </div>
-        {% if group.advice %}<p class="muted" style="margin:4px 0 0">{{ group.advice }}</p>{% endif %}
-
-        <div class="products">
-          {% for product in group.products %}
-            <article class="product" data-product="{{ product.id }}" data-status="{{ product.status }}">
-              <span class="product-brand">{{ product.brand|default:"Recommended" }}</span>
-              <span class="product-name">{{ product.name }}</span>
-              {% if product.price is not None %}<span class="product-price number">{{ product.price|floatformat:"-2" }} {{ product.currency }}</span>{% endif %}
-              <p class="product-why" style="margin:0">{{ product.why }}</p>
-              {% if product.where_to_buy %}<span class="product-where">📍 {{ product.where_to_buy }}</span>{% endif %}
-              <div class="status-group" role="group" aria-label="Status for {{ product.name }}">
-                <button type="button" data-status="started" aria-pressed="{% if product.status == 'started' %}true{% else %}false{% endif %}">Bought</button>
-                <button type="button" data-status="not_yet" aria-pressed="{% if product.status == 'not_yet' %}true{% else %}false{% endif %}">Not yet</button>
-                <button type="button" data-status="not_interested" aria-pressed="{% if product.status == 'not_interested' %}true{% else %}false{% endif %}">Not for me</button>
-              </div>
-            </article>
-          {% endfor %}
-        </div>
-      </section>
-    {% endfor %}
-  </div>
+  {% endif %}
 </div>
 {% endblock %}
 

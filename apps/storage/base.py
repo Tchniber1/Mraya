@@ -42,8 +42,20 @@ class Repository(ABC):
         """Return the most recent analysis dict, or None."""
 
     @abstractmethod
-    def list_products(self, uid):
-        """Return all products, newest first."""
+    def list_analyses(self, uid):
+        """Return every analysis, newest first, each with a ``product_count``."""
+
+    @abstractmethod
+    def get_analysis(self, uid, analysis_id):
+        """Return one analysis dict, or None."""
+
+    @abstractmethod
+    def delete_analysis(self, uid, analysis_id):
+        """Delete an analysis and its products. Returns False if it didn't exist."""
+
+    @abstractmethod
+    def list_products(self, uid, analysis_id=None):
+        """Return products (all, or one analysis's), newest first."""
 
     @abstractmethod
     def get_product(self, uid, product_id):
@@ -52,6 +64,14 @@ class Repository(ABC):
     @abstractmethod
     def update_product(self, uid, product_id, fields):
         """Merge ``fields`` into a product. Returns the updated product, or None if missing."""
+
+    @staticmethod
+    def _with_counts(analyses, products):
+        counts = {}
+        for product in products:
+            counts[product.get("analysis_id")] = counts.get(product.get("analysis_id"), 0) + 1
+        ordered = sorted(analyses, key=lambda a: a["created_at"], reverse=True)
+        return [{**a, "product_count": counts.get(a["id"], 0)} for a in ordered]
 
     @staticmethod
     def _prepare(analysis, products):

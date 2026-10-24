@@ -1,12 +1,19 @@
+import json
+
 from django import forms
 from django.conf import settings
 
+from apps.analysis.countries import COUNTRIES, DEFAULT_CURRENCY
 from apps.analysis.images import InvalidImage, load_image
 from apps.analysis.prompts import CATEGORIES
 
-CURRENCIES = [("MAD", "MAD (DH)"), ("EUR", "EUR (€)"), ("USD", "USD ($)")]
+CURRENCIES = [
+    ("MAD", "MAD (DH)"), ("EUR", "EUR (€)"), ("USD", "USD ($)"), ("GBP", "GBP (£)"),
+    ("CAD", "CAD (CA$)"), ("AED", "AED"), ("SAR", "SAR"),
+]
+COUNTRY_CHOICES = sorted(COUNTRIES.items(), key=lambda item: item[1])
 PROFILE_FIELDS = (
-    "gender", "age", "budget", "currency", "city",
+    "gender", "age", "budget", "currency", "country", "city",
     "style_preferences", "brand_preferences", "suggest_brands", "interests",
 )
 
@@ -16,6 +23,11 @@ class OnboardingForm(forms.Form):
     age = forms.IntegerField(min_value=13, max_value=100)
     budget = forms.IntegerField(min_value=50, max_value=1_000_000)
     currency = forms.ChoiceField(choices=CURRENCIES, initial="MAD")
+    country = forms.ChoiceField(
+        choices=COUNTRY_CHOICES,
+        initial=settings.SERPER_COUNTRY,
+        widget=forms.Select(attrs={"data-currency-for": json.dumps(DEFAULT_CURRENCY)}),
+    )
     city = forms.CharField(max_length=80, required=False)
     style_preferences = forms.CharField(
         max_length=400, required=False, widget=forms.Textarea(attrs={"rows": 2})
@@ -50,6 +62,7 @@ class OnboardingForm(forms.Form):
 def initial_from_user(user):
     initial = {name: user[name] for name in PROFILE_FIELDS if user.get(name) not in (None, "")}
     initial.setdefault("currency", "MAD")
+    initial.setdefault("country", settings.SERPER_COUNTRY)
     initial.setdefault("suggest_brands", True)
     initial.setdefault("interests", list(CATEGORIES))
     return initial

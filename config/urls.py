@@ -8,5 +8,6 @@ urlpatterns = [
     path("accounts/", include("apps.accounts.urls")),
     path("onboarding/", include("apps.onboarding.urls")),
     path("dashboard/", include("apps.dashboard.urls")),
+    path("settings/", include("apps.settings_page.urls")),
     *plugin_urlpatterns(settings.MRAYA_PLUGIN_APPS),
 ]

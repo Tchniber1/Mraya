@@ -42,7 +42,13 @@ def _number(value):
         return None
     raw = re.sub(r"\s", "", match.group()).rstrip(".,")
     if "," in raw and "." in raw:
-        raw = raw.replace(",", "")  # 1,299.50
+        # whichever separator comes last is the decimal one: 1,299.50 / 1.299,50
+        if raw.rindex(",") > raw.rindex("."):
+            raw = raw.replace(".", "").replace(",", ".")
+        else:
+            raw = raw.replace(",", "")
+    elif "." in raw and re.fullmatch(r"\d{1,3}(\.\d{3})+", raw):
+        raw = raw.replace(".", "")  # 1.299 / 12.500 are European thousands
     elif "," in raw:
         # 1,200 / 12,500,000 are thousands; 12,5 is a decimal comma
         raw = raw.replace(",", "") if re.fullmatch(r"\d{1,3}(,\d{3})+", raw) else raw.replace(",", ".")
@@ -99,11 +105,15 @@ def normalise(data, default_currency):
         for item in block.get("products") or []:
             if not isinstance(item, dict) or not _text(item.get("name")):
                 continue
+            name, brand = _text(item.get("name"), 160), _text(item.get("brand"), 80)
+            priority = _text(item.get("priority")).lower()
             products.append(
                 {
                     "category": key,
-                    "name": _text(item.get("name"), 160),
-                    "brand": _text(item.get("brand"), 80),
+                    "name": name,
+                    "brand": brand,
+                    "search_query": _text(item.get("search_query"), 160) or f"{brand} {name}".strip(),
+                    "priority": priority if priority in ("essential", "nice") else "nice",
                     "price": _number(item.get("price")),
                     "currency": _text(item.get("currency"), 8).upper() or default_currency,
                     "where_to_buy": _text(item.get("where_to_buy"), 200),

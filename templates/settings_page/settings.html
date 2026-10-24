@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static ui %}
+{% block title %}Settings{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/settings.css' %}">{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Account</p>
+    <h1 class="headline">Settings</h1>
+  </div>
+</section>
+
+<div class="settings-grid">
+  <section class="card settings-card" aria-labelledby="avatar-title">
+    <h2 class="section-title" id="avatar-title">Profile picture</h2>
+    <p class="muted small">Your Google photo is used until you upload your own. Images are cropped to a square.</p>
+    <div class="avatar-row">
+      <span class="avatar avatar-xl">
+        {% if avatar_url %}<img src="{{ avatar_url }}" alt="Your profile picture" referrerpolicy="no-referrer">{% else %}<span>{{ initials }}</span>{% endif %}
+      </span>
+      <div class="avatar-actions">
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="upload_avatar">
+          <label class="btn btn-outline">
+            {% icon "upload" 16 %} Upload photo
+            <input class="sr-only" type="file" name="avatar" accept="image/jpeg,image/png,image/webp" data-autosubmit>
+          </label>
+          <noscript><button class="btn btn-default" type="submit">Save</button></noscript>
+        </form>
+        {% if user_doc.avatar %}
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="remove_avatar">
+            <button class="btn btn-ghost" type="submit">{% icon "x" 16 %} Remove</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+    {% for error in avatar_form.avatar.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+  </section>
+
+  <section class="card settings-card" aria-labelledby="profile-title">
+    <h2 class="section-title" id="profile-title">Profile</h2>
+    <form method="post" class="settings-form" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save">
+      {% for field in form %}
+        <div class="field">
+          <label class="label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+      <p class="muted small">The theme follows the profile you pick. Country and currency are used for your next analysis.</p>
+      <div class="form-actions"><button class="btn btn-default" type="submit">{% icon "check" 16 %} Save changes</button></div>
+    </form>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll("[data-autosubmit]").forEach(function (input) {
+    input.addEventListener("change", function () { if (input.files.length) input.form.submit(); });
+  });
+</script>
+{% endblock %}

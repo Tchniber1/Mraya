@@ -41,6 +41,14 @@ class AuthTests(MrayaTestCase):
         self.assertEqual(response.json(), {"redirect": "/"})
         self.assertEqual(self.repo.get_user("g-123")["email"], "x@gmail.com")
 
+    def test_sign_in_saves_google_picture_and_keeps_custom_name(self):
+        self.repo.save_user("g-9", {"display_name": "Custom Name"})
+        claims = {"uid": "g-9", "email": "z@gmail.com", "name": "Google Name", "picture": "https://lh3.example/p.jpg"}
+        with mock.patch("apps.accounts.firebase.verify_id_token", return_value=claims):
+            self.client.post("/accounts/session/", data=json.dumps({"idToken": "tok"}), content_type="application/json")
+        user = self.repo.get_user("g-9")
+        self.assertEqual((user["google_picture"], user["display_name"]), ("https://lh3.example/p.jpg", "Custom Name"))
+
     def test_firebase_session_redirects_returning_user_to_dashboard(self):
         self.repo.save_user("g-123", {"has_analysis": True})
         with mock.patch("apps.accounts.firebase.verify_id_token", return_value={"uid": "g-123"}):

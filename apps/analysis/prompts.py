@@ -1,6 +1,8 @@
 """Prompt construction for the Gemma stylist."""
 import json
 
+from .budget import category_allowances
+
 CATEGORIES = {
     "clothing": "Clothing",
     "hair": "Hair products",
@@ -32,6 +34,8 @@ RESPONSE_SCHEMA = {
                 {
                     "name": "specific product name",
                     "brand": "brand",
+                    "search_query": "brand + exact product name + size, as you would type it in a shop search",
+                    "priority": "essential or nice",
                     "price": "number, estimated price",
                     "currency": "currency code",
                     "where_to_buy": "store or website, ideally near the user's city",
@@ -54,6 +58,10 @@ def build_prompt(profile):
     else:
         brand_rule = "The user has no brand preference: recommend well-known, reliable brands that fit the budget."
 
+    allowances = category_allowances(float(profile.get("budget") or 0), interests)
+    currency = profile.get("currency")
+    budget_lines = "\n".join(f"  - {cat}: up to {amount:g} {currency}" for cat, amount in allowances.items())
+
     return f"""You are Mraya, an expert personal stylist, groomer and skincare advisor.
 You receive two photos: IMAGE 1 is a full-body photo, IMAGE 2 is a close-up of the face.
 Study body proportions, posture, current outfit and colours (image 1), and face shape,
@@ -69,7 +77,10 @@ User profile:
 
 Rules:
 - Only cover these categories, in this order: {", ".join(interests)}.
-- Give 2 or 3 products per category. Keep the TOTAL of all prices within the budget.
+- Give 2 or 3 products per category. Budget per category:
+{budget_lines}
+- Each category's products together must stay within its budget. Mark the one product
+  per category the person needs most as "essential", the others as "nice".
 - Use the currency {profile.get("currency")} for every price.
 - "where_to_buy" should name real stores or websites available in the user's city/country when given.
 - Skincare must be gentle and non-medical; never diagnose conditions.
