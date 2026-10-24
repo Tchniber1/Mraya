@@ -30,6 +30,7 @@ Built at **Hacktoberfest Hack Day Rabat × ForgeBots Club UM6P** (24 Oct 2026).
 | **Tests** | 113 automated tests, about 1.5 s, no keys or network needed: `python manage.py test` |
 
 ---
+## VIDEO SHOWCASE: https://drive.google.com/file/d/1kdRpWEBIMOqPspYpbo_76WOw9AAYBHJJ/view?usp=sharing
 
 ## 1. The problem
 
