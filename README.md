@@ -53,6 +53,13 @@ Open http://127.0.0.1:8000.
 4. **Project settings → General → Your apps →** add a Web app. Copy `apiKey`, `authDomain`, `projectId` and `appId` into `.env`.
 5. **Project settings → Service accounts → Generate new private key.** Save the file as `firebase-service-account.json` in the repo root. It is git-ignored; never commit it.
 
+Open the app at **http://localhost:8000**. `localhost` is an authorised domain by default; `127.0.0.1` is not.
+
+**Network blocks `*.firebaseapp.com`?** (The Google popup closes, or you see "Sign-in was cancelled".) Use Google's own sign-in button instead:
+1. Copy the **Web client ID** from *Authentication → Sign-in method → Google → Web SDK configuration*.
+2. In Google Cloud Console → *APIs & Services → Credentials*, open that client. Add `http://localhost` and `http://localhost:8000` to **Authorized JavaScript origins**.
+3. Set `GOOGLE_OAUTH_CLIENT_ID=<id>` in `.env` and restart the server.
+
 Recommended Firestore rules (the server uses the Admin SDK, so clients don't need direct access):
 
 ```
@@ -118,4 +125,4 @@ PRs are welcome, Hacktoberfest included. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE) © 2026 Taha Chniber
+[MIT](LICENSE) © 2026 Taha Chniber, Mohamed Mahzoul, Youssef Afouzar

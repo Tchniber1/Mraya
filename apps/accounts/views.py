@@ -28,7 +28,7 @@ def login_page(request):
         request,
         "accounts/login.html",
         {
-            "firebase_config": settings.FIREBASE_WEB_CONFIG,
+            "firebase_config": {**settings.FIREBASE_WEB_CONFIG, "googleClientId": settings.GOOGLE_OAUTH_CLIENT_ID},
             "firebase_enabled": settings.FIREBASE_AUTH_ENABLED,
             "dev_login": settings.MRAYA_DEV_LOGIN,
         },

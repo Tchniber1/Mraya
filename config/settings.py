@@ -82,6 +82,8 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+# Google sign-in popups must be able to post the credential back to this page.
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 THEME_COOKIE_NAME = "mraya_theme"
 
@@ -121,6 +123,9 @@ FIREBASE_WEB_CONFIG = {
     "appId": os.getenv("FIREBASE_APP_ID", ""),
 }
 FIREBASE_AUTH_ENABLED = all(FIREBASE_WEB_CONFIG.values())
+# Optional: sign in with Google Identity Services instead of the Firebase popup
+# (for networks that block *.firebaseapp.com). Use the project's "Web client" OAuth id.
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "").strip()
 _cred = os.getenv("FIREBASE_CREDENTIALS", "")
 FIREBASE_CREDENTIALS = str(BASE_DIR / _cred) if _cred and not os.path.isabs(_cred) else _cred
 _has_cred_file = bool(FIREBASE_CREDENTIALS) and os.path.isfile(FIREBASE_CREDENTIALS)
