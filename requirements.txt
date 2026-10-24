@@ -1,0 +1,5 @@
+Django>=5.1,<6
+google-genai>=1.0
+firebase-admin>=6.5
+Pillow>=10.0
+python-dotenv>=1.0

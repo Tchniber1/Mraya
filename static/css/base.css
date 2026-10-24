@@ -1,0 +1,193 @@
+/* Layout, typography (Montserrat) and the animated liquid background. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Montserrat", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  background-attachment: fixed;
+  transition: background 0.6s ease, color 0.4s ease;
+  overflow-x: hidden;
+}
+
+/* --- Typography scale ------------------------------------------------- */
+.display {
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  margin: 0;
+}
+
+.headline {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 0.4rem;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.3rem;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin: 0 0 0.5rem;
+}
+
+.lead {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--text-soft);
+  max-width: 46ch;
+}
+
+.muted {
+  color: var(--text-soft);
+  font-weight: 400;
+}
+
+.number {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+}
+
+/* --- Liquid background blobs ------------------------------------------ */
+.liquid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.liquid-bg span {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.7;
+  animation: drift 22s ease-in-out infinite alternate;
+  transition: background 0.8s ease;
+}
+
+.liquid-bg span:nth-child(1) {
+  background: var(--blob-1);
+  top: -14vmax;
+  left: -10vmax;
+}
+
+.liquid-bg span:nth-child(2) {
+  background: var(--blob-2);
+  bottom: -18vmax;
+  right: -12vmax;
+  animation-duration: 28s;
+}
+
+.liquid-bg span:nth-child(3) {
+  background: var(--blob-3);
+  top: 30%;
+  left: 40%;
+  width: 30vmax;
+  height: 30vmax;
+  opacity: 0.45;
+  animation-duration: 34s;
+}
+
+@keyframes drift {
+  to {
+    transform: translate(8vmax, 6vmax) scale(1.15) rotate(25deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-bg span {
+    animation: none;
+  }
+}
+
+/* --- Page shell -------------------------------------------------------- */
+.shell {
+  width: min(1180px, 100% - 32px);
+  margin: 0 auto;
+  padding: 24px 0 64px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px 10px 20px;
+  margin-bottom: 32px;
+  border-radius: 999px;
+}
+
+.brand {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.brand em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nav-links form {
+  margin: 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .nav {
+    border-radius: 24px;
+    flex-wrap: wrap;
+  }
+}
+
+.hidden {
+  display: none !important;
+}

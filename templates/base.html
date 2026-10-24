@@ -1,0 +1,48 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}Mraya{% endblock %} · Mraya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/glass.css' %}">
+  {% block styles %}{% endblock %}
+</head>
+<body data-theme="{{ theme }}">
+  <div class="liquid-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <div class="shell">
+    <header class="nav glass">
+      <a class="brand" href="{% if mraya_user %}{% url 'core:home' %}{% else %}{% url 'accounts:login' %}{% endif %}">Mr<em>a</em>ya</a>
+      {% if mraya_user %}
+        <nav class="nav-links" aria-label="Main">
+          <a class="btn btn-sm" href="{% url 'dashboard:home' %}">Dashboard</a>
+          <a class="btn btn-sm" href="{% url 'core:home' %}">New analysis</a>
+          <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-sm" type="submit">Sign out</button>
+          </form>
+        </nav>
+      {% endif %}
+    </header>
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite">
+    {% for message in messages %}
+      <div class="toast glass">{{ message }}</div>
+    {% endfor %}
+  </div>
+
+  <script src="{% static 'js/common.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

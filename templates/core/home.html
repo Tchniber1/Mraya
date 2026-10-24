@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your style analysis{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/home.css' %}">{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Step 1 · Who are we styling?</p>
+  <h1 class="display">Meet your mirror{% if first_name %}, {{ first_name }}{% endif %}.</h1>
+  <p class="lead">Pick a profile so Mraya can tune its palette and its advice. Then upload two photos and tell us your budget.</p>
+</section>
+
+<form method="post" action="{% url 'onboarding:analyze' %}" enctype="multipart/form-data" id="onboarding-form" novalidate>
+  {% csrf_token %}
+
+  <fieldset class="gender-choice" style="border:0;padding:0;margin:0 0 28px">
+    <legend class="hidden">Gender</legend>
+    <label class="choice glass">
+      <input type="radio" name="gender" value="men" {% if form.gender.value == "men" %}checked{% endif %} required>
+      <span class="swatches" aria-hidden="true"><i style="background:#0d1321"></i><i style="background:#1d2d44"></i><i style="background:#3e5c76"></i><i style="background:#748cab"></i><i style="background:#f0ebd8"></i></span>
+      <span class="choice-title">Man</span>
+      <span class="muted">Midnight navy palette</span>
+    </label>
+    <label class="choice glass">
+      <input type="radio" name="gender" value="women" {% if form.gender.value == "women" %}checked{% endif %} required>
+      <span class="swatches" aria-hidden="true"><i style="background:#880d1e"></i><i style="background:#dd2d4a"></i><i style="background:#f26a8d"></i><i style="background:#f49cbb"></i><i style="background:#cbeef3"></i></span>
+      <span class="choice-title">Woman</span>
+      <span class="muted">Rose &amp; ice palette</span>
+    </label>
+  </fieldset>
+  {{ form.gender.errors }}
+
+  <div class="step-form glass panel {% if not form.gender.value %}locked{% endif %}" id="step-form">
+    {% if form.non_field_errors %}
+      <div class="alert glass" role="alert">{{ form.non_field_errors|join:" " }}</div>
+    {% endif %}
+
+    <section class="form-section">
+      <p class="eyebrow">Step 2 · Your photos</p>
+      <div class="uploads">
+        <div>
+          <label class="dropzone" data-dropzone>
+            <input type="file" name="full_body" accept="image/jpeg,image/png,image/webp" required>
+            <span class="dz-icon" aria-hidden="true">🧍</span>
+            <span class="dz-title">Full-body photo</span>
+            <span class="dz-hint muted">Head to toe, good light, plain background</span>
+          </label>
+          {{ form.full_body.errors }}
+        </div>
+        <div>
+          <label class="dropzone" data-dropzone>
+            <input type="file" name="face" accept="image/jpeg,image/png,image/webp" required>
+            <span class="dz-icon" aria-hidden="true">🙂</span>
+            <span class="dz-title">Face close-up</span>
+            <span class="dz-hint muted">No filter, face the light, hair visible</span>
+          </label>
+          {{ form.face.errors }}
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <p class="eyebrow">Step 3 · About you</p>
+      <div class="fields">
+        <div class="field">
+          <label class="label" for="id_age">Age</label>
+          {{ form.age }}
+          {{ form.age.errors }}
+        </div>
+        <div class="field">
+          <label class="label" for="id_budget">Total budget</label>
+          {{ form.budget }}
+          {{ form.budget.errors }}
+        </div>
+        <div class="field">
+          <label class="label" for="id_currency">Currency</label>
+          {{ form.currency }}
+        </div>
+        <div class="field">
+          <label class="label" for="id_city">City / country</label>
+          {{ form.city }}
+        </div>
+        <div class="field span-2">
+          <label class="label" for="id_brand_preferences">Favourite brands (optional)</label>
+          {{ form.brand_preferences }}
+        </div>
+        <div class="field span-3">
+          <label class="label" for="id_style_preferences">Your taste</label>
+          {{ form.style_preferences }}
+        </div>
+        <label class="check span-3">{{ form.suggest_brands }} Suggest brands for me too</label>
+        <div class="field span-3">
+          <span class="label">What should Mraya cover?</span>
+          <div class="chips">
+            {% for choice in form.interests %}
+              <label class="chip chip-toggle">{{ choice.tag }} {{ choice.choice_label }}</label>
+            {% endfor %}
+          </div>
+          {{ form.interests.errors }}
+        </div>
+      </div>
+    </section>
+
+    <div class="submit-row">
+      <p class="muted" style="margin:0">Analysed by <strong>{{ gemma_model }}</strong>. Photos are shrunk and never shared.</p>
+      <button class="btn btn-primary btn-lg" type="submit" id="analyze-btn">Analyze my style ✦</button>
+    </div>
+  </div>
+</form>
+
+<div class="overlay hidden" id="overlay" role="status" aria-live="polite">
+  <div class="overlay-card glass">
+    <div class="orb" aria-hidden="true"></div>
+    <p class="title">Gemma is studying your look…</p>
+    <p class="muted" id="overlay-step">Reading proportions and colours</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/onboarding.js' %}"></script>{% endblock %}

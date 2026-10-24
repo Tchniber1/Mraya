@@ -1,0 +1,44 @@
+/* Login page */
+.auth {
+  min-height: calc(100vh - 140px);
+  display: grid;
+  place-items: center;
+}
+
+.auth-card {
+  width: min(480px, 100%);
+  padding: 44px 36px;
+  text-align: center;
+}
+
+.auth-card .display {
+  font-size: clamp(3rem, 9vw, 4.8rem);
+}
+
+.auth-card .lead {
+  margin: 14px auto 30px;
+}
+
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-actions form {
+  margin: 0;
+}
+
+.auth-actions .btn {
+  width: 100%;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-note {
+  margin-top: 22px;
+  font-size: 0.78rem;
+}

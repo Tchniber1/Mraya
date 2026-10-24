@@ -1,0 +1,95 @@
+/* Colour themes. <body data-theme="neutral|men|women"> switches the palette. */
+
+/* Neutral starting palette: https://coolors.co/edede9-d6ccc2-f5ebe0-e3d5ca-d5bdaf */
+:root,
+[data-theme="neutral"] {
+  --p1: #edede9;
+  --p2: #d6ccc2;
+  --p3: #f5ebe0;
+  --p4: #e3d5ca;
+  --p5: #d5bdaf;
+
+  --bg-1: #f5ebe0;
+  --bg-2: #e3d5ca;
+  --blob-1: #d5bdaf;
+  --blob-2: #edede9;
+  --blob-3: #d6ccc2;
+
+  --text: #3b302a;
+  --text-soft: #6f6159;
+  --accent: #8f6f5e;
+  --accent-strong: #6e5242;
+  --accent-contrast: #fffaf5;
+  --success: #5f7f5a;
+
+  --glass-bg: rgba(255, 255, 255, 0.34);
+  --glass-bg-strong: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-shadow: 0 20px 50px rgba(110, 82, 66, 0.18);
+  --glass-highlight: rgba(255, 255, 255, 0.85);
+  --input-bg: rgba(255, 255, 255, 0.5);
+  --sheen: rgba(255, 255, 255, 0.35);
+  color-scheme: light;
+}
+
+/* Men: https://coolors.co/palette/0d1321-1d2d44-3e5c76-748cab-f0ebd8 */
+[data-theme="men"] {
+  --p1: #0d1321;
+  --p2: #1d2d44;
+  --p3: #3e5c76;
+  --p4: #748cab;
+  --p5: #f0ebd8;
+
+  --bg-1: #0d1321;
+  --bg-2: #1d2d44;
+  --blob-1: #3e5c76;
+  --blob-2: #748cab;
+  --blob-3: #1d2d44;
+
+  --text: #f0ebd8;
+  --text-soft: #b9c3d3;
+  --accent: #748cab;
+  --accent-strong: #f0ebd8;
+  --accent-contrast: #0d1321;
+  --success: #9fc5a8;
+
+  --glass-bg: rgba(29, 45, 68, 0.38);
+  --glass-bg-strong: rgba(29, 45, 68, 0.6);
+  --glass-border: rgba(240, 235, 216, 0.18);
+  --glass-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  --glass-highlight: rgba(240, 235, 216, 0.28);
+  --input-bg: rgba(13, 19, 33, 0.45);
+  --sheen: rgba(240, 235, 216, 0.1);
+  color-scheme: dark;
+}
+
+/* Women: https://coolors.co/palette/880d1e-dd2d4a-f26a8d-f49cbb-cbeef3 */
+[data-theme="women"] {
+  --p1: #880d1e;
+  --p2: #dd2d4a;
+  --p3: #f26a8d;
+  --p4: #f49cbb;
+  --p5: #cbeef3;
+
+  --bg-1: #f49cbb;
+  --bg-2: #cbeef3;
+  --blob-1: #f26a8d;
+  --blob-2: #cbeef3;
+  --blob-3: #dd2d4a;
+
+  --text: #4d0611;
+  --text-soft: #880d1e;
+  --accent: #dd2d4a;
+  --accent-strong: #880d1e;
+  --accent-contrast: #fff5f7;
+  --success: #2f7f73;
+
+  --glass-bg: rgba(255, 255, 255, 0.3);
+  --glass-bg-strong: rgba(255, 255, 255, 0.52);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 22px 55px rgba(136, 13, 30, 0.22);
+  --glass-highlight: rgba(255, 255, 255, 0.85);
+  --input-bg: rgba(255, 255, 255, 0.45);
+  --sheen: rgba(255, 255, 255, 0.35);
+  color-scheme: light;
+}

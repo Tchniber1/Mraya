@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
+
+{% block content %}
+<section class="dash-head">
+  <div>
+    <p class="eyebrow">Private dashboard</p>
+    <h1 class="headline">{% if user.display_name %}{{ user.display_name }}'s{% else %}Your{% endif %} style plan</h1>
+  </div>
+  <a class="btn btn-primary" href="{% url 'core:home' %}">New analysis</a>
+</section>
+
+<div class="dash-grid">
+  <aside class="dash-side">
+    {% if user.body_thumb or user.face_thumb %}
+      <div class="glass panel">
+        <div class="photos">
+          {% if user.body_thumb %}<img src="{{ user.body_thumb }}" alt="Your full-body photo">{% endif %}
+          {% if user.face_thumb %}<img src="{{ user.face_thumb }}" alt="Your face photo">{% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="glass panel" id="progress-card">
+      <div class="level">
+        <div class="ring" id="level-ring" style="--pct: {{ progress.progress_pct }}">
+          <div class="ring-inner"><small>Level</small><span class="number" id="level-number">{{ progress.level }}</span></div>
+        </div>
+        <div>
+          <p class="eyebrow" style="margin:0">Rank</p>
+          <p class="title" id="level-title">{{ progress.title }}</p>
+          <p class="muted" style="margin:0"><span class="number" id="xp-total">{{ progress.xp }}</span> XP</p>
+        </div>
+      </div>
+      <div class="xp-bar" aria-hidden="true"><span id="xp-fill" style="width: {{ progress.progress_pct }}%"></span></div>
+      <p class="muted" style="margin:0;font-size:.82rem"><span id="xp-to-next">{{ progress.xp_to_next }}</span> XP to the next level</p>
+
+      <div class="stats">
+        <div class="stat"><span class="number" id="count-started">{{ counts.started }}</span><span class="label">Started</span></div>
+        <div class="stat"><span class="number">{{ total_products }}</span><span class="label">Products</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <section class="glass panel">
+      <div class="category-head">
+        <div>
+          <p class="eyebrow">Mraya says</p>
+          <p class="lead" style="max-width:none;color:var(--text)">{{ analysis.summary }}</p>
+        </div>
+        {% if analysis.style_score is not None %}
+          <div class="score"><span class="number">{{ analysis.style_score }}</span><span class="muted">/ 100 style score</span></div>
+        {% endif %}
+      </div>
+      <div class="chips profile-chips">
+        {% for key, value in analysis.style_profile.items %}
+          {% if value %}<span class="chip">{{ value }}</span>{% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if analysis.routine.morning or analysis.routine.evening %}
+      <section class="glass panel routine">
+        <p class="eyebrow">Daily routine</p>
+        <div class="grid-2">
+          <div><p class="title">☀ Morning</p><ol>{% for step in analysis.routine.morning %}<li>{{ step }}</li>{% endfor %}</ol></div>
+          <div><p class="title">☾ Evening</p><ol>{% for step in analysis.routine.evening %}<li>{{ step }}</li>{% endfor %}</ol></div>
+        </div>
+      </section>
+    {% endif %}
+
+    {% for group in groups %}
+      <section class="glass panel" aria-labelledby="cat-{{ group.key }}">
+        <div class="category-head">
+          <h2 class="headline" id="cat-{{ group.key }}">{{ group.label }}</h2>
+          <span class="muted">{{ group.products|length }} pick{{ group.products|length|pluralize }}</span>
+        </div>
+        {% if group.advice %}<p class="muted" style="margin:4px 0 0">{{ group.advice }}</p>{% endif %}
+
+        <div class="products">
+          {% for product in group.products %}
+            <article class="product" data-product="{{ product.id }}" data-status="{{ product.status }}">
+              <span class="product-brand">{{ product.brand|default:"Recommended" }}</span>
+              <span class="product-name">{{ product.name }}</span>
+              {% if product.price is not None %}<span class="product-price number">{{ product.price|floatformat:"-2" }} {{ product.currency }}</span>{% endif %}
+              <p class="product-why" style="margin:0">{{ product.why }}</p>
+              {% if product.where_to_buy %}<span class="product-where">📍 {{ product.where_to_buy }}</span>{% endif %}
+              <div class="status-group" role="group" aria-label="Status for {{ product.name }}">
+                <button type="button" data-status="started" aria-pressed="{% if product.status == 'started' %}true{% else %}false{% endif %}">Bought</button>
+                <button type="button" data-status="not_yet" aria-pressed="{% if product.status == 'not_yet' %}true{% else %}false{% endif %}">Not yet</button>
+                <button type="button" data-status="not_interested" aria-pressed="{% if product.status == 'not_interested' %}true{% else %}false{% endif %}">Not for me</button>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/dashboard.js' %}"></script>{% endblock %}
